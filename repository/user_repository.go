@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"github.com/labstack/echo/v4"
 	"github.com/notblessy/memoriku/model"
 	"gorm.io/gorm"
 )
@@ -18,9 +17,10 @@ func NewUserRepository(d *gorm.DB) model.UserRepository {
 	}
 }
 
-// FindByEmailAndPassword :nodoc:
-func (u *userRepository) FindByEmailAndPassword(c echo.Context, user model.User) (*model.User, error) {
-	err := u.db.Where("email = ? AND password = ?", user.Email, user.Password).First(&user).Error
+// FindByEmail :nodoc:
+func (u *userRepository) FindByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := u.db.Where("email = ?", email).First(&user).Error
 	switch {
 	case errors.Is(err, gorm.ErrRecordNotFound):
 		return nil, nil

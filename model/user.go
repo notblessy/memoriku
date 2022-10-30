@@ -1,14 +1,13 @@
 package model
 
 import (
-	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 	"time"
 )
 
 // UserRepository :nodoc:
 type UserRepository interface {
-	FindByEmailAndPassword(c echo.Context, user User) (*User, error)
+	FindByEmail(email string) (*User, error)
 }
 
 // User :nodoc:
