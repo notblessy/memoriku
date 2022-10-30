@@ -2,13 +2,27 @@ package http
 
 import (
 	"github.com/labstack/echo/v4"
-	"net/http"
+	"github.com/notblessy/memoriku/model"
 )
 
+// HTTPService :nodoc:
+type HTTPService struct {
+	userRepo model.UserRepository
+}
+
+// NewHTTPService :nodoc:
+func NewHTTPService() *HTTPService {
+	return new(HTTPService)
+}
+
+// RegisterUserRepository :nodoc:
+func (h *HTTPService) RegisterUserRepository(v model.UserRepository) {
+	h.userRepo = v
+}
+
 // Routes :nodoc:
-func Routes(route *echo.Echo) {
-	route.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Init HTTP!")
-	})
+func (h *HTTPService) Routes(route *echo.Echo) {
+	user := route.Group("/user")
+	user.POST("/login", h.loginHandler)
 
 }

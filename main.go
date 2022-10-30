@@ -6,6 +6,7 @@ import (
 	"github.com/notblessy/memoriku/config"
 	"github.com/notblessy/memoriku/db"
 	"github.com/notblessy/memoriku/http"
+	"github.com/notblessy/memoriku/repository"
 )
 
 func main() {
@@ -18,7 +19,12 @@ func main() {
 
 	e := echo.New()
 
-	http.Routes(e)
+	videoRepo := repository.NewUserRepository(initDB)
+
+	httpSvc := http.NewHTTPService()
+	httpSvc.RegisterUserRepository(videoRepo)
+
+	httpSvc.Routes(e)
 
 	log.Fatal(e.Start(":" + config.HTTPPort()))
 }

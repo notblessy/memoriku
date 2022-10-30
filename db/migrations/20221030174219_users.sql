@@ -4,6 +4,7 @@ create table users (
     name varchar(128) not null,
     photo varchar(128) not null,
     email varchar(255),
+    token_auth text,
     password varchar(255),
     created_at timestamp,
     updated_at timestamp,

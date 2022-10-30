@@ -69,6 +69,7 @@ CREATE TABLE `users` (
   `name` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
   `photo` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `token_auth` text COLLATE utf8mb4_general_ci,
   `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
