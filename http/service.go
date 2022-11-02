@@ -30,13 +30,15 @@ func (h *HTTPService) RegisterCategoryRepository(c model.CategoryRepository) {
 
 // Routes :nodoc:
 func (h *HTTPService) Routes(route *echo.Echo) {
-	user := route.Group("/user")
-	user.POST("/login", h.loginHandler)
+	route.POST("/login", h.loginHandler)
 
-	category := route.Group("/category")
-	category.Use(middleware.Logger())
-	category.Use(middleware.Recover())
-	category.Use(middleware.JWTWithConfig(mdw.JWTConfig()))
-	category.POST("/", h.createCategoryHandler)
+	routes := route.Group("/cms")
+	routes.Use(middleware.Logger())
+	routes.Use(middleware.Recover())
+	routes.Use(middleware.JWTWithConfig(mdw.JWTConfig()))
+
+	routes.GET("/user", h.profileHandler)
+
+	routes.POST("/category", h.createCategoryHandler)
 
 }

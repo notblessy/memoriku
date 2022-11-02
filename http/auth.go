@@ -1,12 +1,14 @@
 package http
 
 import (
+	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/notblessy/memoriku/config"
 	"github.com/notblessy/memoriku/middleware"
 	"github.com/notblessy/memoriku/model"
 	"github.com/notblessy/memoriku/utils"
+	"gorm.io/gorm"
 	"net/http"
 	"time"
 )
@@ -58,4 +60,40 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 			"token":   t,
 		})
 	}
+}
+
+// profileHandler :nodoc:
+func (h *HTTPService) profileHandler(c echo.Context) error {
+	jwtClaim, err := middleware.GetSessionClaims(c)
+	if err != nil {
+		return utils.ResponseUnauthorized(c, &utils.Response{
+			Status:  "ERROR",
+			Message: fmt.Sprintf("%s", err),
+			Data:    err,
+		})
+	}
+
+	user, err := h.userRepo.FindByID(jwtClaim.ID)
+	if err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return utils.ResponseNotFound(c, &utils.Response{
+				Status:  "ERROR",
+				Message: fmt.Sprintf("%s", err),
+				Data:    err,
+			})
+		default:
+			return utils.ResponseError(c, &utils.Response{
+				Status:  "ERROR",
+				Message: fmt.Sprintf("%s", err),
+				Data:    err,
+			})
+		}
+	}
+
+	return utils.ResponseCreated(c, &utils.Response{
+		Status:  "SUCCESS",
+		Message: "SUCCESS",
+		Data:    user,
+	})
 }

@@ -31,6 +31,10 @@ func ResponseBadRequest(c echo.Context, response *Response) error {
 	return c.JSON(http.StatusBadRequest, response)
 }
 
+func ResponseCreated(c echo.Context, response *Response) error {
+	defaultValueSuccess(response)
+	return c.JSON(http.StatusCreated, response)
+}
 func defaultValueSuccess(response *Response) {
 	if response.Status == "" {
 		response.Status = "SUCCESS"

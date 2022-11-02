@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"errors"
 	"github.com/notblessy/memoriku/model"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -19,14 +19,38 @@ func NewUserRepository(d *gorm.DB) model.UserRepository {
 
 // FindByEmail :nodoc:
 func (u *userRepository) FindByEmail(email string) (*model.User, error) {
+	logger := log.WithFields(log.Fields{
+		"email": email,
+	})
+
 	var user model.User
+
 	err := u.db.Where("email = ?", email).First(&user).Error
-	switch {
-	case errors.Is(err, gorm.ErrRecordNotFound):
-		return nil, nil
-	case err != nil:
+	if err != nil {
+		logger.Error(err)
 		return nil, err
-	default:
-		return &user, nil
 	}
+
+	user.HidePassword()
+
+	return &user, nil
+}
+
+// FindByID :nodoc:
+func (u *userRepository) FindByID(id int64) (*model.User, error) {
+	logger := log.WithFields(log.Fields{
+		"id": id,
+	})
+
+	var user model.User
+
+	err := u.db.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		logger.Error(err)
+		return nil, err
+	}
+
+	user.HidePassword()
+
+	return &user, nil
 }
