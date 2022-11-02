@@ -39,6 +39,7 @@ func (h *HTTPService) Routes(route *echo.Echo) {
 
 	routes.GET("/user", h.profileHandler)
 
+	routes.GET("/category", h.findCategoriesHandler)
 	routes.POST("/category", h.createCategoryHandler)
 
 }

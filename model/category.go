@@ -8,6 +8,7 @@ import (
 // CategoryRepository :nodoc:
 type CategoryRepository interface {
 	Create(cat Category) error
+	FindAll(req CategoryRequest) (cat *[]Category, count int64, err error)
 }
 
 // Category :nodoc:
@@ -18,4 +19,11 @@ type Category struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
+}
+
+// CategoryRequest :nodoc:
+type CategoryRequest struct {
+	Name string `json:"name"`
+	Size int    `json:"size"`
+	Page int    `json:"page"`
 }
