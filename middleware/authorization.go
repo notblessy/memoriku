@@ -1,61 +1,44 @@
 package middleware
 
 import (
+	"errors"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/notblessy/memoriku/config"
-	"strings"
+	logger "github.com/sirupsen/logrus"
+)
+
+type Err error
+
+var (
+	ErrUnauthorized Err = errors.New("unauthorized")
 )
 
 type JWTClaims struct {
-	jwt.Claims
-	ID             string
-	OrganizationID *string `json:"idOrganization"`
-	UserType       string  `json:"userType"`
+	jwt.StandardClaims
+	ID    int64
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
 
-func parseJWT(token string) (*JWTClaims, error) {
-	secretKey := []byte(config.JWTSecret())
-
-	tokenClaims, err := jwt.ParseWithClaims(
-		token,
-		&JWTClaims{},
-		func(t *jwt.Token) (interface{}, error) {
-			return secretKey, nil
-		},
-	)
-
-	if tokenClaims != nil {
-		if claims, ok := tokenClaims.Claims.(*JWTClaims); ok && tokenClaims.Valid {
-			return claims, nil
-		}
+func JWTConfig() middleware.JWTConfig {
+	c := middleware.JWTConfig{
+		Claims:     &JWTClaims{},
+		SigningKey: []byte(config.JWTSecret()),
 	}
 
-	return nil, err
+	return c
 }
 
-func Authorization() echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			auth := c.Request().Header.Get("Authorization")
-			if auth == "" {
-				return echo.ErrUnauthorized
-			}
+func GetSessionClaims(c echo.Context) (*JWTClaims, error) {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*JWTClaims)
 
-			token := strings.Split(auth, " ")
-
-			if len(token) == 2 {
-				user, err := parseJWT(token[1])
-
-				if err == nil {
-					c.Set("user", user)
-					if err := next(c); err != nil {
-						c.Error(err)
-					}
-				}
-			}
-
-			return echo.ErrUnauthorized
-		}
+	if claims == nil {
+		logger.Error(ErrUnauthorized)
+		return nil, ErrUnauthorized
 	}
+
+	return claims, nil
 }

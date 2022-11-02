@@ -22,8 +22,3 @@ type User struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt
 }
-
-// UserUsecase :nodoc:
-type UserUsecase interface {
-	Authenticate(user User)
-}

@@ -21,6 +21,16 @@ func ResponseUnauthorized(c echo.Context, response *Response) error {
 	return c.JSON(http.StatusUnauthorized, response)
 }
 
+func ResponseNotFound(c echo.Context, response *Response) error {
+	defaultValueError(response)
+	return c.JSON(http.StatusNotFound, response)
+}
+
+func ResponseBadRequest(c echo.Context, response *Response) error {
+	defaultValueError(response)
+	return c.JSON(http.StatusBadRequest, response)
+}
+
 func defaultValueSuccess(response *Response) {
 	if response.Status == "" {
 		response.Status = "SUCCESS"

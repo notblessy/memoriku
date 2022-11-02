@@ -4,6 +4,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/notblessy/memoriku/config"
+	"github.com/notblessy/memoriku/middleware"
 	"github.com/notblessy/memoriku/model"
 	"github.com/notblessy/memoriku/utils"
 	"net/http"
@@ -26,7 +27,7 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 	}
 
 	if err != nil && user == nil {
-		return utils.ResponseUnauthorized(c, &utils.Response{
+		return utils.ResponseNotFound(c, &utils.Response{
 			Data: err,
 		})
 	}
@@ -36,13 +37,16 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 			Data: err,
 		})
 	} else {
-		token := jwt.New(jwt.SigningMethodHS256)
+		claims := &middleware.JWTClaims{
+			ID:    user.ID,
+			Name:  user.Name,
+			Email: user.Email,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
+			},
+		}
 
-		claims := token.Claims.(jwt.MapClaims)
-		claims["id"] = user.ID
-		claims["name"] = user.Name
-		claims["email"] = user.Email
-		claims["expired"] = time.Now().Add(time.Hour * 72).Unix()
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 		t, err := token.SignedString([]byte(config.JWTSecret()))
 		if err != nil {
@@ -50,7 +54,8 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 		}
 
 		return c.JSON(http.StatusOK, map[string]string{
-			"token": t,
+			"message": "success",
+			"token":   t,
 		})
 	}
 }
