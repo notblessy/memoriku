@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/notblessy/memoriku/model"
+	"github.com/notblessy/memoriku/utils"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -32,6 +33,21 @@ func (u *categoryRepository) Create(cat model.Category) error {
 	return err
 }
 
+// Update :nodoc:
+func (u *categoryRepository) Update(cat *model.Category) error {
+	logger := log.WithFields(log.Fields{
+		"user": utils.Encode(cat),
+	})
+
+	err := u.db.Save(cat).Error
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+
+	return nil
+}
+
 // FindAll :nodoc:
 func (u *categoryRepository) FindAll(req model.CategoryRequest) (cat *[]model.Category, count int64, err error) {
 	logger := log.WithFields(log.Fields{
@@ -60,4 +76,19 @@ func (u *categoryRepository) FindAll(req model.CategoryRequest) (cat *[]model.Ca
 	}
 
 	return cat, count, err
+}
+
+// FindByID :nodoc:
+func (u *categoryRepository) FindByID(id int64) (cat *model.Category, err error) {
+	logger := log.WithFields(log.Fields{
+		"categoryID": id,
+	})
+
+	err = u.db.Take(&cat, id).Error
+	if err != nil {
+		logger.Error(err)
+		return nil, err
+	}
+
+	return cat, err
 }

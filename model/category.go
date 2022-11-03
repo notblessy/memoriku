@@ -8,17 +8,19 @@ import (
 // CategoryRepository :nodoc:
 type CategoryRepository interface {
 	Create(cat Category) error
+	Update(cat *Category) (err error)
 	FindAll(req CategoryRequest) (cat *[]Category, count int64, err error)
+	FindByID(id int64) (cat *Category, err error)
 }
 
 // Category :nodoc:
 type Category struct {
-	gorm.Model
-	ID        int64  `gorm:"primary_key"`
-	Name      string `json:"name" validate:"required"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID        int64          `gorm:"primary_key" json:"id"`
+	GroupID   int64          `json:"group_id"`
+	Name      string         `json:"name" validate:"required"`
+	CreatedAt time.Time      `gorm:"<-:create" json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
 // CategoryRequest :nodoc:

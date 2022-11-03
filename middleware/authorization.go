@@ -17,9 +17,7 @@ var (
 
 type JWTClaims struct {
 	jwt.StandardClaims
-	ID    int64
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID int64
 }
 
 func JWTConfig() middleware.JWTConfig {

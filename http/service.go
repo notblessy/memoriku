@@ -1,10 +1,22 @@
 package http
 
 import (
+	"errors"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	mdw "github.com/notblessy/memoriku/middleware"
 	"github.com/notblessy/memoriku/model"
+)
+
+var (
+	// ErrBadRequest :nodoc:
+	ErrBadRequest = errors.New("bad request")
+
+	// ErrIncorrectEmailOrPassword :nodoc:
+	ErrIncorrectEmailOrPassword = errors.New("incorrect email or password")
+
+	// ErrIncorrectEmailOrPassword :nodoc:
+	ErrNotFound = errors.New("not found")
 )
 
 // HTTPService :nodoc:
@@ -38,8 +50,10 @@ func (h *HTTPService) Routes(route *echo.Echo) {
 	routes.Use(middleware.JWTWithConfig(mdw.JWTConfig()))
 
 	routes.GET("/user", h.profileHandler)
+	routes.PUT("/user/:userID", h.updateProfileHandler)
 
-	routes.GET("/category", h.findCategoriesHandler)
 	routes.POST("/category", h.createCategoryHandler)
+	routes.PUT("/category/:categoryID", h.updateCategoryHandler)
+	routes.GET("/category", h.findCategoriesHandler)
 
 }

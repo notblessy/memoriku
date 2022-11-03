@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/notblessy/memoriku/model"
+	"github.com/notblessy/memoriku/utils"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
@@ -31,8 +32,6 @@ func (u *userRepository) FindByEmail(email string) (*model.User, error) {
 		return nil, err
 	}
 
-	user.HidePassword()
-
 	return &user, nil
 }
 
@@ -53,4 +52,19 @@ func (u *userRepository) FindByID(id int64) (*model.User, error) {
 	user.HidePassword()
 
 	return &user, nil
+}
+
+// Update :nodoc:
+func (u *userRepository) Update(user *model.User) error {
+	logger := log.WithFields(log.Fields{
+		"user": utils.Encode(user),
+	})
+
+	err := u.db.Save(user).Error
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+
+	return nil
 }
