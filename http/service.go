@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	mdw "github.com/notblessy/memoriku/middleware"
 	"github.com/notblessy/memoriku/model"
+	"gorm.io/gorm"
 )
 
 var (
@@ -15,7 +16,7 @@ var (
 	// ErrIncorrectEmailOrPassword :nodoc:
 	ErrIncorrectEmailOrPassword = errors.New("incorrect email or password")
 
-	// ErrIncorrectEmailOrPassword :nodoc:
+	// ErrNotFound :nodoc:
 	ErrNotFound = errors.New("not found")
 )
 
@@ -23,6 +24,8 @@ var (
 type HTTPService struct {
 	userRepo     model.UserRepository
 	categoryRepo model.CategoryRepository
+	memoryRepo   model.MemoryRepository
+	db           gorm.DB
 }
 
 // NewHTTPService :nodoc:
@@ -40,6 +43,11 @@ func (h *HTTPService) RegisterCategoryRepository(c model.CategoryRepository) {
 	h.categoryRepo = c
 }
 
+// RegisterMemoryRepository :nodoc:
+func (h *HTTPService) RegisterMemoryRepository(m model.MemoryRepository) {
+	h.memoryRepo = m
+}
+
 // Routes :nodoc:
 func (h *HTTPService) Routes(route *echo.Echo) {
 	route.POST("/login", h.loginHandler)
@@ -53,7 +61,11 @@ func (h *HTTPService) Routes(route *echo.Echo) {
 	routes.PUT("/user/:userID", h.updateProfileHandler)
 
 	routes.POST("/category", h.createCategoryHandler)
-	routes.PUT("/category/:categoryID", h.updateCategoryHandler)
 	routes.GET("/category", h.findCategoriesHandler)
+	routes.GET("/category/:categoryID", h.findCategoryByIDHandler)
+	routes.PUT("/category/:categoryID", h.updateCategoryHandler)
+	routes.DELETE("/category/:categoryID", h.deleteCategoryByID)
+
+	routes.POST("/memory", h.createMemoryHandler)
 
 }

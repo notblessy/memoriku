@@ -20,10 +20,12 @@ func main() {
 
 	videoRepo := repository.NewUserRepository(initDB)
 	categoryRepo := repository.NewCategoryRepository(initDB)
+	memoryRepo := repository.NewMemoryRepository(initDB)
 
 	httpSvc := http.NewHTTPService()
 	httpSvc.RegisterUserRepository(videoRepo)
 	httpSvc.RegisterCategoryRepository(categoryRepo)
+	httpSvc.RegisterMemoryRepository(memoryRepo)
 
 	httpSvc.Routes(e)
 

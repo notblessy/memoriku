@@ -8,7 +8,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"math/rand"
-	"net/http"
 	"strconv"
 	"time"
 )
@@ -43,16 +42,13 @@ func (h *HTTPService) createCategoryHandler(c echo.Context) error {
 	err := h.categoryRepo.Create(data)
 	if err != nil {
 		return utils.ResponseError(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("%s", err),
 			Data:    err,
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.Response{
-		Status:  "SUCCESS",
-		Message: "SUCCESS",
-		Data:    data.ID,
+	return utils.ResponseOK(c, &utils.Response{
+		Data: data.ID,
 	})
 }
 
@@ -72,7 +68,7 @@ func (h *HTTPService) findCategoriesHandler(c echo.Context) error {
 		size = utils.DefaultSize
 	}
 
-	req := model.CategoryRequest{
+	req := model.CategoryReqQuery{
 		Name: name,
 		Page: page,
 		Size: size,
@@ -82,13 +78,14 @@ func (h *HTTPService) findCategoriesHandler(c echo.Context) error {
 	if err != nil {
 		logger.Error(err)
 		return utils.ResponseError(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("%s", err),
 			Data:    err,
 		})
 	}
 
-	return c.JSON(http.StatusOK, utils.BuildPagination(cat, int(count), req.Page, req.Size))
+	return utils.ResponseOK(c, &utils.Response{
+		Data: utils.BuildPagination(cat, int(count), req.Page, req.Size),
+	})
 }
 
 // updateCategoryHandler :nodoc:
@@ -96,7 +93,6 @@ func (h *HTTPService) updateCategoryHandler(c echo.Context) error {
 	category, err := h.getCategoryRequestBody(c)
 	if err != nil {
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("error validate request: %s", ErrBadRequest),
 			Data:    nil,
 		})
@@ -126,9 +122,7 @@ func (h *HTTPService) updateCategoryHandler(c echo.Context) error {
 	}
 
 	return utils.ResponseCreated(c, &utils.Response{
-		Status:  "SUCCESS",
-		Message: "SUCCESS",
-		Data:    category.ID,
+		Data: category.ID,
 	})
 }
 
@@ -136,11 +130,10 @@ func (h *HTTPService) updateCategoryHandler(c echo.Context) error {
 func (h *HTTPService) findCategoryByIDHandler(c echo.Context) error {
 	logger := log.WithField("context", utils.Encode(c))
 
-	id, err := strconv.Atoi(c.QueryParam("id"))
+	id, err := strconv.Atoi(c.Param("categoryID"))
 	if err != nil {
 		logger.Error(err)
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("%s", err),
 			Data:    err,
 		})
@@ -152,24 +145,56 @@ func (h *HTTPService) findCategoryByIDHandler(c echo.Context) error {
 		case gorm.ErrRecordNotFound:
 			logger.Error(err)
 			return utils.ResponseNotFound(c, &utils.Response{
-				Status:  "ERROR",
 				Message: fmt.Sprintf("%s", err),
 				Data:    err,
 			})
 		default:
 			logger.Error(err)
 			return utils.ResponseError(c, &utils.Response{
-				Status:  "ERROR",
 				Message: fmt.Sprintf("%s", err),
 				Data:    err,
 			})
 		}
 	}
 
-	return c.JSON(http.StatusOK, utils.Response{
-		Status:  "SUCCESS",
-		Message: "SUCCESS",
-		Data:    cat,
+	return utils.ResponseOK(c, &utils.Response{
+		Data: cat,
+	})
+}
+
+// deleteCategoryByID :nodoc:
+func (h *HTTPService) deleteCategoryByID(c echo.Context) error {
+	logger := log.WithField("context", utils.Encode(c))
+
+	id, err := strconv.Atoi(c.QueryParam("id"))
+	if err != nil {
+		logger.Error(err)
+		return utils.ResponseBadRequest(c, &utils.Response{
+			Message: fmt.Sprintf("%s", err),
+			Data:    err,
+		})
+	}
+
+	err = h.categoryRepo.DeleteByID(int64(id))
+	if err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			logger.Error(err)
+			return utils.ResponseNotFound(c, &utils.Response{
+				Message: fmt.Sprintf("%s", err),
+				Data:    err,
+			})
+		default:
+			logger.Error(err)
+			return utils.ResponseError(c, &utils.Response{
+				Message: fmt.Sprintf("%s", err),
+				Data:    err,
+			})
+		}
+	}
+
+	return utils.ResponseOK(c, &utils.Response{
+		Data: id,
 	})
 }
 

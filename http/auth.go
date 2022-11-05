@@ -24,7 +24,6 @@ func (h *HTTPService) loginHandler(c echo.Context) error {
 	}
 	if err := c.Validate(&data); err != nil {
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("error validate: %s", ErrBadRequest),
 			Data:    nil,
 		})
@@ -84,7 +83,6 @@ func (h *HTTPService) profileHandler(c echo.Context) error {
 	jwtClaim, err := middleware.GetSessionClaims(c)
 	if err != nil {
 		return utils.ResponseUnauthorized(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("%s", err),
 			Data:    err,
 		})
@@ -95,13 +93,11 @@ func (h *HTTPService) profileHandler(c echo.Context) error {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return utils.ResponseNotFound(c, &utils.Response{
-				Status:  "ERROR",
 				Message: fmt.Sprintf("%s", err),
 				Data:    err,
 			})
 		default:
 			return utils.ResponseError(c, &utils.Response{
-				Status:  "ERROR",
 				Message: fmt.Sprintf("%s", err),
 				Data:    err,
 			})
@@ -109,9 +105,7 @@ func (h *HTTPService) profileHandler(c echo.Context) error {
 	}
 
 	return utils.ResponseCreated(c, &utils.Response{
-		Status:  "SUCCESS",
-		Message: "SUCCESS",
-		Data:    user,
+		Data: user,
 	})
 }
 
@@ -120,7 +114,6 @@ func (h *HTTPService) updateProfileHandler(c echo.Context) error {
 	user, err := h.getRequestBody(c)
 	if err != nil {
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("error validate request: %s", ErrBadRequest),
 			Data:    nil,
 		})
@@ -150,9 +143,7 @@ func (h *HTTPService) updateProfileHandler(c echo.Context) error {
 	}
 
 	return utils.ResponseCreated(c, &utils.Response{
-		Status:  "SUCCESS",
-		Message: "SUCCESS",
-		Data:    user.ID,
+		Data: user.ID,
 	})
 }
 

@@ -19,12 +19,12 @@ func NewCategoryRepository(d *gorm.DB) model.CategoryRepository {
 }
 
 // Create :nodoc:
-func (u *categoryRepository) Create(cat model.Category) error {
+func (c *categoryRepository) Create(cat model.Category) error {
 	logger := log.WithFields(log.Fields{
 		"category": cat,
 	})
 
-	err := u.db.Create(&cat).Error
+	err := c.db.Create(&cat).Error
 	if err != nil {
 		logger.Error(err)
 		return err
@@ -34,12 +34,12 @@ func (u *categoryRepository) Create(cat model.Category) error {
 }
 
 // Update :nodoc:
-func (u *categoryRepository) Update(cat *model.Category) error {
+func (c *categoryRepository) Update(cat *model.Category) error {
 	logger := log.WithFields(log.Fields{
-		"user": utils.Encode(cat),
+		"category": utils.Encode(cat),
 	})
 
-	err := u.db.Save(cat).Error
+	err := c.db.Save(cat).Error
 	if err != nil {
 		logger.Error(err)
 		return err
@@ -49,46 +49,62 @@ func (u *categoryRepository) Update(cat *model.Category) error {
 }
 
 // FindAll :nodoc:
-func (u *categoryRepository) FindAll(req model.CategoryRequest) (cat *[]model.Category, count int64, err error) {
+func (c *categoryRepository) FindAll(req model.CategoryReqQuery) (cats *[]model.Category, count int64, err error) {
 	logger := log.WithFields(log.Fields{
 		"categoryRequest": req,
 	})
 
 	offset := (req.Page - 1) * req.Size
 
-	err = u.db.Model(cat).
+	err = c.db.Model(cats).
 		Count(&count).
 		Error
 	if err != nil {
 		logger.Error(err)
-		return cat, count, err
+		return cats, count, err
 	}
 
-	err = u.db.Model(cat).
+	err = c.db.Model(cats).
 		Limit(req.Size).
 		Offset(offset).
 		Order("created_at DESC").
-		Find(&cat).Error
+		Find(&cats).Error
 
 	if err != nil {
 		logger.Error(err)
 		return nil, int64(0), err
 	}
 
-	return cat, count, err
+	return cats, count, err
 }
 
 // FindByID :nodoc:
-func (u *categoryRepository) FindByID(id int64) (cat *model.Category, err error) {
+func (c *categoryRepository) FindByID(id int64) (cat *model.Category, err error) {
 	logger := log.WithFields(log.Fields{
 		"categoryID": id,
 	})
 
-	err = u.db.Take(&cat, id).Error
+	err = c.db.Take(&cat, id).Error
 	if err != nil {
 		logger.Error(err)
 		return nil, err
 	}
 
 	return cat, err
+}
+
+// DeleteByID :nodoc:
+func (c *categoryRepository) DeleteByID(id int64) error {
+	logger := log.WithFields(log.Fields{
+		"categoryID": id,
+	})
+
+	var cat model.Category
+	err := c.db.Delete(&cat, id).Error
+	if err != nil {
+		logger.Error(err)
+		return err
+	}
+
+	return err
 }

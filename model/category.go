@@ -9,8 +9,9 @@ import (
 type CategoryRepository interface {
 	Create(cat Category) error
 	Update(cat *Category) (err error)
-	FindAll(req CategoryRequest) (cat *[]Category, count int64, err error)
+	FindAll(req CategoryReqQuery) (cat *[]Category, count int64, err error)
 	FindByID(id int64) (cat *Category, err error)
+	DeleteByID(id int64) error
 }
 
 // Category :nodoc:
@@ -23,8 +24,8 @@ type Category struct {
 	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
 }
 
-// CategoryRequest :nodoc:
-type CategoryRequest struct {
+// CategoryReqQuery :nodoc:
+type CategoryReqQuery struct {
 	Name string `json:"name"`
 	Size int    `json:"size"`
 	Page int    `json:"page"`
