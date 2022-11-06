@@ -20,7 +20,6 @@ func (h *HTTPService) createCategoryHandler(c echo.Context) error {
 	if err := c.Bind(&data); err != nil {
 		logger.Error(ErrBadRequest)
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("error binding: %s", ErrBadRequest),
 			Data:    ErrBadRequest,
 		})
@@ -29,7 +28,6 @@ func (h *HTTPService) createCategoryHandler(c echo.Context) error {
 	if err := c.Validate(&data); err != nil {
 		logger.Error(ErrBadRequest)
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Status:  "ERROR",
 			Message: fmt.Sprintf("error validate: %s", ErrBadRequest),
 			Data:    ErrBadRequest,
 		})
@@ -166,7 +164,7 @@ func (h *HTTPService) findCategoryByIDHandler(c echo.Context) error {
 func (h *HTTPService) deleteCategoryByID(c echo.Context) error {
 	logger := log.WithField("context", utils.Encode(c))
 
-	id, err := strconv.Atoi(c.QueryParam("id"))
+	id, err := strconv.Atoi(c.QueryParam("categoryID"))
 	if err != nil {
 		logger.Error(err)
 		return utils.ResponseBadRequest(c, &utils.Response{

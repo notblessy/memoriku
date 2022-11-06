@@ -7,8 +7,7 @@ import (
 
 // MemoryRepository :nodoc:
 type MemoryRepository interface {
-	Create(memory *Memory) error
-	Update(memory *Memory) (err error)
+	Upsert(memory *Memory) error
 	FindAll(req MemoryReqQuery) (memories *[]Memory, count int64, err error)
 	FindByID(id int64) (cat *Memory, err error)
 	DeleteByID(id int64) error
@@ -17,8 +16,8 @@ type MemoryRepository interface {
 // Memory :nodoc:
 type Memory struct {
 	ID               int64              `gorm:"primary_key" json:"id"`
-	CategoryID       int64              `json:"category_id"`
-	Category         int64              `gorm:"<-:false" json:"category"`
+	CategoryID       int64              `gorm:"->:false;<-" json:"category_id,omitempty"`
+	Category         Category           `json:"category"`
 	Title            string             `json:"title"`
 	Body             string             `json:"body"`
 	Photo            string             `json:"photo"`

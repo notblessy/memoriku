@@ -18,15 +18,15 @@ func NewMemoryRepository(d *gorm.DB) model.MemoryRepository {
 	}
 }
 
-// Create :nodoc:
-func (m *memoryRepository) Create(memory *model.Memory) error {
+// Upsert :nodoc:
+func (m *memoryRepository) Upsert(memory *model.Memory) error {
 	logger := log.WithFields(log.Fields{
 		"memory": utils.Encode(memory),
 	})
 
 	tx := m.db.Begin()
 
-	err := tx.Create(&memory).Error
+	err := tx.Save(&memory).Error
 	if err != nil {
 		logger.Error(err)
 		tx.Rollback()
@@ -35,21 +35,6 @@ func (m *memoryRepository) Create(memory *model.Memory) error {
 
 	tx.Commit()
 	return err
-}
-
-// Update :nodoc:
-func (m *memoryRepository) Update(memory *model.Memory) error {
-	logger := log.WithFields(log.Fields{
-		"memory": utils.Encode(memory),
-	})
-
-	err := m.db.Save(memory).Error
-	if err != nil {
-		logger.Error(err)
-		return err
-	}
-
-	return nil
 }
 
 // FindAll :nodoc:
@@ -69,8 +54,10 @@ func (m *memoryRepository) FindAll(req model.MemoryReqQuery) (memories *[]model.
 	}
 
 	err = m.db.Model(memories).
-		Limit(req.Size).
-		Offset(offset).
+		Joins("Category").
+		Preload("MemoryReferences").
+		Preload("Tags").
+		Limit(req.Size).Offset(offset).
 		Order("created_at DESC").
 		Find(&memories).Error
 
@@ -88,7 +75,9 @@ func (m *memoryRepository) FindByID(id int64) (memories *model.Memory, err error
 		"memoryID": id,
 	})
 
-	err = m.db.Take(&memories, id).Error
+	err = m.db.Joins("Category").
+		Preload("MemoryReferences").
+		Preload("Tags").Take(&memories, id).Error
 	if err != nil {
 		logger.Error(err)
 		return nil, err
