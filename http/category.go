@@ -196,6 +196,62 @@ func (h *HTTPService) deleteCategoryByID(c echo.Context) error {
 	})
 }
 
+// findGrouppedCategoriesHandler :nodoc:
+func (h *HTTPService) findGrouppedCategoriesHandler(c echo.Context) error {
+	logger := log.WithField("context", utils.Encode(c))
+
+	name := c.QueryParam("name")
+
+	page, err := strconv.Atoi(c.QueryParam("page"))
+	if err != nil {
+		page = utils.DefaultPage
+	}
+
+	size, err := strconv.Atoi(c.QueryParam("size"))
+	if err != nil {
+		size = utils.DefaultSize
+	}
+
+	req := model.CategoryReqQuery{
+		Name: name,
+		Page: page,
+		Size: size,
+	}
+
+	categories, _, err := h.categoryRepo.FindAll(req)
+	if err != nil {
+		logger.Error(err)
+		return utils.ResponseError(c, &utils.Response{
+			Message: fmt.Sprintf("%s", err),
+			Data:    err,
+		})
+	}
+
+	var keys = make(map[string]bool)
+	var groupIDs []string
+	for _, data := range *categories {
+		if _, value := keys[data.GroupID]; !value {
+			keys[data.GroupID] = true
+			groupIDs = append(groupIDs, data.GroupID)
+		}
+	}
+
+	var results []model.CategoryWeb
+	for i := 0; i < len(groupIDs); i++ {
+		var result model.CategoryWeb
+		for _, data := range *categories {
+			if groupIDs[i] == data.GroupID {
+				result.GroupID = model.GroupCategory[data.GroupID]
+				result.Categories = append(result.Categories, h.MakeCategoryValueObject(data))
+			}
+		}
+		results = append(results, result)
+	}
+	return utils.ResponseOK(c, &utils.Response{
+		Data: results,
+	})
+}
+
 func (h *HTTPService) getCategoryRequestBody(c echo.Context) (*model.Category, error) {
 	var data model.Category
 
@@ -216,4 +272,11 @@ func (h *HTTPService) getCategoryRequestBody(c echo.Context) (*model.Category, e
 	}
 
 	return &data, nil
+}
+
+func (h *HTTPService) MakeCategoryValueObject(category model.Category) (result model.ValueObject) {
+	result.Value = category.ID
+	result.Label = category.Name
+
+	return result
 }

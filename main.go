@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/notblessy/memoriku/config"
 	"github.com/notblessy/memoriku/db"
@@ -16,6 +17,9 @@ func main() {
 	defer db.CloseMysql(initDB)
 
 	e := echo.New()
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 	e.Validator = &utils.CustomValidator{Validator: validator.New()}
 
 	videoRepo := repository.NewUserRepository(initDB)

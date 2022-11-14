@@ -51,6 +51,7 @@ func (h *HTTPService) RegisterMemoryRepository(m model.MemoryRepository) {
 // Routes :nodoc:
 func (h *HTTPService) Routes(route *echo.Echo) {
 	route.POST("/login", h.loginHandler)
+	route.GET("/category", h.findGrouppedCategoriesHandler)
 
 	routes := route.Group("/cms")
 	routes.Use(middleware.Logger())

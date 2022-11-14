@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+var GroupCategory = map[string]string{
+	"PROGRAMMING": "Programming",
+	"TRAVEL":      "Travel",
+}
+
 // CategoryRepository :nodoc:
 type CategoryRepository interface {
 	Create(cat Category) error
@@ -17,11 +22,17 @@ type CategoryRepository interface {
 // Category :nodoc:
 type Category struct {
 	ID        int64          `gorm:"primary_key" json:"id"`
-	GroupID   int64          `json:"group_id"`
+	GroupID   string         `json:"group_id,omitempty"`
 	Name      string         `json:"name" validate:"required"`
-	CreatedAt time.Time      `gorm:"<-:create" json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	CreatedAt time.Time      `gorm:"<-:create" json:"created_at,omitempty"`
+	UpdatedAt time.Time      `json:"updated_at,omitempty"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at,omitempty"`
+}
+
+// CategoryWeb :nodoc:
+type CategoryWeb struct {
+	GroupID    string        `json:"group_id"`
+	Categories []ValueObject `json:"categories"`
 }
 
 // CategoryReqQuery :nodoc:
