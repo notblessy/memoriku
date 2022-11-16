@@ -37,7 +37,7 @@ func (h *HTTPService) createMemoryHandler(c echo.Context) error {
 		data.ID = time.Now().UnixNano() + int64(rand.Intn(10000))
 	}
 
-	err := h.memoryRepo.Upsert(&data)
+	err := h.memoryRepo.Create(&data)
 	if err != nil {
 		return utils.ResponseError(c, &utils.Response{
 			Message: fmt.Sprintf("%s", err),

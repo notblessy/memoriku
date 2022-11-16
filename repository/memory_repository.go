@@ -19,14 +19,14 @@ func NewMemoryRepository(d *gorm.DB) model.MemoryRepository {
 }
 
 // Upsert :nodoc:
-func (m *memoryRepository) Upsert(memory *model.Memory) error {
+func (m *memoryRepository) Create(memory *model.Memory) error {
 	logger := log.WithFields(log.Fields{
 		"memory": utils.Encode(memory),
 	})
 
 	tx := m.db.Begin()
 
-	err := tx.Save(&memory).Error
+	err := tx.Create(&memory).Error
 	if err != nil {
 		logger.Error(err)
 		tx.Rollback()
