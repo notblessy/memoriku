@@ -52,6 +52,8 @@ func (h *HTTPService) RegisterMemoryRepository(m model.MemoryRepository) {
 func (h *HTTPService) Routes(route *echo.Echo) {
 	route.POST("/login", h.loginHandler)
 	route.GET("/category", h.findGrouppedCategoriesHandler)
+	route.GET("/memory", h.findMemoriesHandler)
+	route.GET("/memory/:memoryID", h.findMemoryByIDHandler)
 
 	routes := route.Group("/cms")
 	routes.Use(middleware.Logger())
@@ -68,7 +70,5 @@ func (h *HTTPService) Routes(route *echo.Echo) {
 	routes.DELETE("/category/:categoryID", h.deleteCategoryByID)
 
 	routes.POST("/memory", h.createMemoryHandler)
-	routes.GET("/memory", h.findMemoriesHandler)
-	routes.GET("/memory/:memoryID", h.findMemoryByIDHandler)
 
 }
