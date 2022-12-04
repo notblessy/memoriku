@@ -33,8 +33,9 @@ func (h *HTTPService) createCategoryHandler(c echo.Context) error {
 		})
 	}
 
-	if data.ID == 0 {
-		data.ID = time.Now().UnixNano() + int64(rand.Intn(10000))
+	if data.ID == "" {
+		randomID := time.Now().Nanosecond() + rand.Intn(10000)
+		data.ID = strconv.Itoa(randomID)
 	}
 
 	err := h.categoryRepo.Create(data)
@@ -128,16 +129,15 @@ func (h *HTTPService) updateCategoryHandler(c echo.Context) error {
 func (h *HTTPService) findCategoryByIDHandler(c echo.Context) error {
 	logger := log.WithField("context", utils.Encode(c))
 
-	id, err := strconv.Atoi(c.Param("categoryID"))
-	if err != nil {
-		logger.Error(err)
+	id := c.Param("categoryID")
+	if id == "" {
+		logger.Error(ErrBadRequest)
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Message: fmt.Sprintf("%s", err),
-			Data:    err,
+			Message: fmt.Sprintf("%s", ErrBadRequest),
 		})
 	}
 
-	cat, err := h.categoryRepo.FindByID(int64(id))
+	cat, err := h.categoryRepo.FindByID(id)
 	if err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
@@ -164,16 +164,15 @@ func (h *HTTPService) findCategoryByIDHandler(c echo.Context) error {
 func (h *HTTPService) deleteCategoryByID(c echo.Context) error {
 	logger := log.WithField("context", utils.Encode(c))
 
-	id, err := strconv.Atoi(c.QueryParam("categoryID"))
-	if err != nil {
-		logger.Error(err)
+	id := c.Param("categoryID")
+	if id == "" {
+		logger.Error(ErrBadRequest)
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Message: fmt.Sprintf("%s", err),
-			Data:    err,
+			Message: fmt.Sprintf("%s", ErrBadRequest),
 		})
 	}
 
-	err = h.categoryRepo.DeleteByID(int64(id))
+	err := h.categoryRepo.DeleteByID(id)
 	if err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
@@ -263,12 +262,7 @@ func (h *HTTPService) getCategoryRequestBody(c echo.Context) (*model.Category, e
 	}
 
 	if c.Param("categoryID") != "" {
-		categoryID, err := strconv.Atoi(c.Param("categoryID"))
-		if err != nil {
-			return nil, err
-		}
-
-		data.ID = int64(categoryID)
+		data.ID = c.Param("categoryID")
 	}
 
 	return &data, nil

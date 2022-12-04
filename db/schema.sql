@@ -16,8 +16,8 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categories` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `group_id` int DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `group_id` varchar(32) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `name` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -33,8 +33,8 @@ CREATE TABLE `categories` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `memories` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `category_id` bigint DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `category_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `title` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
   `body` text COLLATE utf8mb4_general_ci,
   `photo` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE `memories` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `memory_references` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `memory_id` bigint DEFAULT NULL,
+  `memory_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `title` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
   `link` text COLLATE utf8mb4_general_ci,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -75,7 +75,7 @@ CREATE TABLE `memory_references` (
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `memory_tags` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `memory_id` bigint DEFAULT NULL,
+  `memory_id` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `tag_id` bigint DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,

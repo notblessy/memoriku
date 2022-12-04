@@ -70,7 +70,7 @@ func (m *memoryRepository) FindAll(req model.MemoryReqQuery) (memories *[]model.
 }
 
 // FindByID :nodoc:
-func (m *memoryRepository) FindByID(id int64) (memories *model.Memory, err error) {
+func (m *memoryRepository) FindByID(id string) (memories *model.Memory, err error) {
 	logger := log.WithFields(log.Fields{
 		"memoryID": id,
 	})
@@ -87,7 +87,7 @@ func (m *memoryRepository) FindByID(id int64) (memories *model.Memory, err error
 }
 
 // DeleteByID :nodoc:
-func (m *memoryRepository) DeleteByID(id int64) error {
+func (m *memoryRepository) DeleteByID(id string) error {
 	logger := log.WithFields(log.Fields{
 		"memoryID": id,
 	})

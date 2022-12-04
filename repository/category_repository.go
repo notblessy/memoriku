@@ -79,7 +79,7 @@ func (c *categoryRepository) FindAll(req model.CategoryReqQuery) (cats *[]model.
 }
 
 // FindByID :nodoc:
-func (c *categoryRepository) FindByID(id int64) (cat *model.Category, err error) {
+func (c *categoryRepository) FindByID(id string) (cat *model.Category, err error) {
 	logger := log.WithFields(log.Fields{
 		"categoryID": id,
 	})
@@ -94,7 +94,7 @@ func (c *categoryRepository) FindByID(id int64) (cat *model.Category, err error)
 }
 
 // DeleteByID :nodoc:
-func (c *categoryRepository) DeleteByID(id int64) error {
+func (c *categoryRepository) DeleteByID(id string) error {
 	logger := log.WithFields(log.Fields{
 		"categoryID": id,
 	})

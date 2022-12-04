@@ -33,8 +33,9 @@ func (h *HTTPService) createMemoryHandler(c echo.Context) error {
 		})
 	}
 
-	if data.ID == 0 {
-		data.ID = time.Now().UnixNano() + int64(rand.Intn(10000))
+	if data.ID == "" {
+		randomID := time.Now().Nanosecond() + rand.Intn(10000)
+		data.ID = strconv.Itoa(randomID)
 	}
 
 	err := h.memoryRepo.Create(&data)
@@ -90,16 +91,15 @@ func (h *HTTPService) findMemoriesHandler(c echo.Context) error {
 func (h *HTTPService) findMemoryByIDHandler(c echo.Context) error {
 	logger := log.WithField("context", utils.Encode(c))
 
-	id, err := strconv.Atoi(c.Param("memoryID"))
-	if err != nil {
-		logger.Error(err)
+	id := c.Param("memoryID")
+	if id == "" {
+		logger.Error(ErrBadRequest)
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Message: fmt.Sprintf("%s", err),
-			Data:    err,
+			Message: fmt.Sprintf("%s", ErrBadRequest),
 		})
 	}
 
-	memory, err := h.memoryRepo.FindByID(int64(id))
+	memory, err := h.memoryRepo.FindByID(id)
 	if err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
@@ -126,16 +126,15 @@ func (h *HTTPService) findMemoryByIDHandler(c echo.Context) error {
 func (h *HTTPService) deleteMemoryByID(c echo.Context) error {
 	logger := log.WithField("context", utils.Encode(c))
 
-	id, err := strconv.Atoi(c.QueryParam("memoryID"))
-	if err != nil {
-		logger.Error(err)
+	id := c.Param("memoryID")
+	if id == "" {
+		logger.Error(ErrBadRequest)
 		return utils.ResponseBadRequest(c, &utils.Response{
-			Message: fmt.Sprintf("%s", err),
-			Data:    err,
+			Message: fmt.Sprintf("%s", ErrBadRequest),
 		})
 	}
 
-	err = h.memoryRepo.DeleteByID(int64(id))
+	err := h.memoryRepo.DeleteByID(id)
 	if err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:

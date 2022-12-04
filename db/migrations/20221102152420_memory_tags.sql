@@ -1,7 +1,7 @@
 -- migrate:up
 create table memory_tags (
     id bigint primary key AUTO_INCREMENT not null,
-    memory_id bigint,
+    memory_id varchar(255),
         FOREIGN KEY (memory_id) REFERENCES memories(id) ON DELETE CASCADE,
     tag_id bigint,
     FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE,

@@ -9,14 +9,14 @@ import (
 type MemoryRepository interface {
 	Create(memory *Memory) error
 	FindAll(req MemoryReqQuery) (memories *[]Memory, count int64, err error)
-	FindByID(id int64) (cat *Memory, err error)
-	DeleteByID(id int64) error
+	FindByID(id string) (cat *Memory, err error)
+	DeleteByID(id string) error
 }
 
 // Memory :nodoc:
 type Memory struct {
-	ID               int64              `gorm:"primary_key" json:"id"`
-	CategoryID       int64              `gorm:"->:false;<-" json:"category_id,omitempty"`
+	ID               string             `gorm:"primary_key" json:"id"`
+	CategoryID       string             `gorm:"->:false;<-" json:"category_id,omitempty"`
 	Category         *Category          `gorm:"<-:false" json:"category,omitempty"`
 	Title            string             `json:"title"`
 	Body             string             `json:"body"`

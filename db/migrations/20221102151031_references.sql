@@ -1,7 +1,7 @@
 -- migrate:up
 create table memory_references (
     id bigint primary key AUTO_INCREMENT not null,
-    memory_id bigint,
+    memory_id varchar(255),
         FOREIGN KEY (memory_id) REFERENCES memories(id) ON DELETE CASCADE,
     title varchar(128) not null,
     link text,

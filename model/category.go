@@ -15,13 +15,13 @@ type CategoryRepository interface {
 	Create(cat Category) error
 	Update(cat *Category) (err error)
 	FindAll(req CategoryReqQuery) (cat *[]Category, count int64, err error)
-	FindByID(id int64) (cat *Category, err error)
-	DeleteByID(id int64) error
+	FindByID(id string) (cat *Category, err error)
+	DeleteByID(id string) error
 }
 
 // Category :nodoc:
 type Category struct {
-	ID        int64          `gorm:"primary_key" json:"id"`
+	ID        string         `gorm:"primary_key" json:"id"`
 	GroupID   string         `json:"group_id,omitempty"`
 	Name      string         `json:"name" validate:"required"`
 	CreatedAt time.Time      `gorm:"<-:create" json:"created_at,omitempty"`

@@ -1,7 +1,7 @@
 -- migrate:up
 create table memories (
-    id bigint primary key AUTO_INCREMENT not null,
-    category_id bigint,
+    id varchar(255) primary key not null,
+    category_id varchar(255),
         FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     title varchar(128) not null,
     body text,
