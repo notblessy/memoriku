@@ -55,7 +55,8 @@ func (h *HTTPService) createMemoryHandler(c echo.Context) error {
 func (h *HTTPService) findMemoriesHandler(c echo.Context) error {
 	logger := log.WithField("context", utils.Encode(c))
 
-	name := c.QueryParam("name")
+	title := c.QueryParam("title")
+	categoryID := c.QueryParam("categoryID")
 
 	page, err := strconv.Atoi(c.QueryParam("page"))
 	if err != nil {
@@ -68,9 +69,10 @@ func (h *HTTPService) findMemoriesHandler(c echo.Context) error {
 	}
 
 	req := model.MemoryReqQuery{
-		Name: name,
-		Page: page,
-		Size: size,
+		Title:      title,
+		CategoryID: categoryID,
+		Page:       page,
+		Size:       size,
 	}
 
 	memories, count, err := h.memoryRepo.FindAll(req)

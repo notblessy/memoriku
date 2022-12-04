@@ -43,18 +43,29 @@ func (m *memoryRepository) FindAll(req model.MemoryReqQuery) (memories *[]model.
 		"memoryRequest": req,
 	})
 
+	// Query Builder for filter memories
+	qm := m.db.Model(memories)
+	qt := m.db.Model(memories)
+
 	offset := (req.Page - 1) * req.Size
 
-	err = m.db.Model(memories).
-		Count(&count).
-		Error
+	if req.Title != "" {
+		qm.Where("title LIKE ?", "%"+req.Title+"%")
+		qt.Where("title LIKE ?", "%"+req.Title+"%")
+	}
+
+	if req.CategoryID != "" {
+		qm.Where("category_id = ?", req.CategoryID)
+		qt.Where("category_id = ?", req.CategoryID)
+	}
+
+	err = qt.Count(&count).Error
 	if err != nil {
 		logger.Error(err)
 		return memories, count, err
 	}
 
-	err = m.db.Model(memories).
-		Joins("Category").
+	err = qm.Joins("Category").
 		Preload("MemoryReferences").
 		Preload("Tags").
 		Limit(req.Size).Offset(offset).
@@ -100,4 +111,13 @@ func (m *memoryRepository) DeleteByID(id string) error {
 	}
 
 	return err
+}
+
+func ScopeCategory(categoryID string) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		if categoryID != "" {
+			return db.Where("category_id = ?", categoryID)
+		}
+		return db
+	}
 }

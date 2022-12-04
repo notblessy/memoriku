@@ -30,9 +30,10 @@ type Memory struct {
 
 // MemoryReqQuery :nodoc:
 type MemoryReqQuery struct {
-	Name string `json:"name"`
-	Size int    `json:"size"`
-	Page int    `json:"page"`
+	Title      string `json:"title"`
+	CategoryID string `json:"categoryID"`
+	Size       int    `json:"size"`
+	Page       int    `json:"page"`
 }
 
 // Tag :nodoc:
