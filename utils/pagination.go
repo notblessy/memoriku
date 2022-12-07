@@ -1,5 +1,7 @@
 package utils
 
+import "math"
+
 // DefaultSize :nodoc:
 const DefaultSize int = 10
 
@@ -22,12 +24,26 @@ func BuildPagination(result interface{}, total, page, size int) ResponseWithPagi
 		size = DefaultSize
 	}
 
+	totalPages := math.Ceil(float64(total / size))
+
+	var hasNext bool
+	if page < int(totalPages) {
+		hasNext = true
+	}
+
+	if !hasNext {
+		page = 0
+	} else {
+		page = page + 1
+	}
+
 	return ResponseWithPagination{
 		Records: result,
 		PageSummary: map[string]interface{}{
-			"page":  page,
-			"size":  size,
-			"total": total,
+			"size":    size,
+			"page":    page,
+			"hasNext": hasNext,
+			"total":   total,
 		},
 	}
 }

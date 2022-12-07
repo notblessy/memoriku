@@ -83,7 +83,7 @@ func (h *HTTPService) findMemoriesHandler(c echo.Context) error {
 			Data:    err,
 		})
 	}
-
+	
 	return utils.ResponseOK(c, &utils.Response{
 		Data: utils.BuildPagination(memories, int(count), req.Page, req.Size),
 	})
