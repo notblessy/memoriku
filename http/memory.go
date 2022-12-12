@@ -2,14 +2,15 @@ package http
 
 import (
 	"fmt"
+	"math/rand"
+	"strconv"
+	"time"
+
 	"github.com/labstack/echo/v4"
 	"github.com/notblessy/memoriku/model"
 	"github.com/notblessy/memoriku/utils"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 // createMemoryHandler :nodoc:
@@ -83,7 +84,7 @@ func (h *HTTPService) findMemoriesHandler(c echo.Context) error {
 			Data:    err,
 		})
 	}
-	
+
 	return utils.ResponseOK(c, &utils.Response{
 		Data: utils.BuildPagination(memories, int(count), req.Page, req.Size),
 	})
