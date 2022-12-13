@@ -2,14 +2,15 @@ package db
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/notblessy/memoriku/config"
 	logrus "github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"time"
 )
 
 func InitiateMysql() *gorm.DB {
@@ -18,11 +19,17 @@ func InitiateMysql() *gorm.DB {
 		logrus.Fatal(err)
 	}
 
+	logLevel := logger.Info
+
+	if config.ENV() == "PRODUCTION" {
+		logLevel = logger.Error
+	}
+
 	gormLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
 			SlowThreshold:             time.Second,
-			LogLevel:                  logger.Info,
+			LogLevel:                  logLevel,
 			IgnoreRecordNotFoundError: true,
 			Colorful:                  true,
 		},
