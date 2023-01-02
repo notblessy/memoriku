@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 // LoadENV :nodoc:
@@ -50,4 +51,24 @@ func MysqlDBName() string {
 // JWTSecret :nodoc:
 func JWTSecret() string {
 	return os.Getenv("JWT_SECRET")
+}
+
+// CloudinaryCloudName :nodoc:
+func CloudinaryCloudName() string {
+	return os.Getenv("CLOUDINARY_CLOUD_NAME")
+}
+
+// CloudinaryAPIKey :nodoc:
+func CloudinaryAPIKey() string {
+	return os.Getenv("CLOUDINARY_API_KEY")
+}
+
+// CloudinaryAPISecret :nodoc:
+func CloudinaryAPISecret() string {
+	return os.Getenv("CLOUDINARY_API_SECRET")
+}
+
+// CloudinaryUploadFolder :nodoc:
+func CloudinaryUploadFolder() string {
+	return os.Getenv("CLOUDINARY_UPLOAD_FOLDER")
 }

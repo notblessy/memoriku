@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	mdw "github.com/notblessy/memoriku/middleware"
@@ -70,5 +71,6 @@ func (h *HTTPService) Routes(route *echo.Echo) {
 	routes.DELETE("/category/:categoryID", h.deleteCategoryByID)
 
 	routes.POST("/memory", h.createMemoryHandler)
+	routes.POST("/upload", h.uploadImageHandler)
 
 }

@@ -159,3 +159,36 @@ func (h *HTTPService) deleteMemoryByID(c echo.Context) error {
 		Data: id,
 	})
 }
+
+// uploadImageHandler :nodoc:
+func (h *HTTPService) uploadImageHandler(c echo.Context) error {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return utils.ResponseBadRequest(c, &utils.Response{
+			Message: fmt.Sprintf("%s", err),
+			Data:    err,
+		})
+	}
+
+	src, err := file.Open()
+	if err != nil {
+		return utils.ResponseBadRequest(c, &utils.Response{
+			Message: fmt.Sprintf("%s", err),
+			Data:    err,
+		})
+	}
+
+	defer src.Close()
+
+	resp, err := utils.UploadImage(src, file.Filename)
+	if err != nil {
+		return utils.ResponseError(c, &utils.Response{
+			Message: fmt.Sprintf("%s", err),
+			Data:    err,
+		})
+	}
+
+	return utils.ResponseOK(c, &utils.Response{
+		Data: resp,
+	})
+}
